@@ -11,6 +11,8 @@ export default function Home() {
         Welcome {user ? user.name : 'Guest'}
       </Typography>
       
+      Abcdef
+
       <Typography variant="body1" paragraph>
         {user 
           ? 'You are logged in and can access your profile.'
