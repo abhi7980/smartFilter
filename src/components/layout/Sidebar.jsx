@@ -7,16 +7,20 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import HomeIcon from '@mui/icons-material/Home';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import SettingsIcon from '@mui/icons-material/Settings';
-import PersonIcon from '@mui/icons-material/Person';
+
+// Outlined icons with small size
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 
 const menuItems = [
-  { text: 'Home', icon: <HomeIcon />, path: '/' },
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
+  { text: 'Home', icon: <HomeOutlinedIcon fontSize="small" />, path: '/' },
+  { text: 'Products', icon: <Inventory2OutlinedIcon fontSize="small" />, path: '/products' },
+  { text: 'Dashboard', icon: <DashboardOutlinedIcon fontSize="small" />, path: '/dashboard' },
+  { text: 'Profile', icon: <PersonOutlineOutlinedIcon fontSize="small" />, path: '/profile' },
+  { text: 'Settings', icon: <SettingsOutlinedIcon fontSize="small" />, path: '/settings' },
 ];
 
 export default function Sidebar({ open, onClose }) {
