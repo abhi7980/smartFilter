@@ -31,7 +31,6 @@ export default function AppRoutes() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/products" element={<Products />} />
          <Route path="/users" element={<UserDetails />} />
-
       </Route>
     </Routes>
   );
