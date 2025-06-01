@@ -29,7 +29,7 @@ const menuItems = [
     path: "/dashboard",
   },
   {
-    text: "Profile",
+    text: "Users",
     icon: <PersonOutlineOutlinedIcon fontSize="small" />,
     path: "/users",
   },

@@ -67,22 +67,26 @@ const products = [
 
 export default function Products() {
   return (
-    <Box sx={{ px: { xs: 2, md: 4 }, py: 4 }}>
+    <Box sx={{ px: 2, py: 4, width: '100%', maxWidth: '100vw' }}>
       <Typography variant="h5" mb={3} textAlign="center" fontWeight="bold">
         Explore Our Products
       </Typography>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={3}>
         {products.map((product) => (
-          <Grid item xs={6} sm={4} md={3} key={product.id}>
+          <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={product.id}>
             <Card
               sx={{
                 borderRadius: 2,
-                boxShadow: '0 4px 15px rgba(0,0,0,0.15)', // shadow always visible
-                position: 'relative',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+                  transform: 'translateY(-5px)',
+                },
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100%',
               }}
             >
               <Box
@@ -95,7 +99,7 @@ export default function Products() {
                 <CardMedia
                   component="img"
                   image={product.image}
-                  alt={product.title}
+                  alt={`${product.title} - ${product.description}`}
                   sx={{
                     height: 250,
                     width: '100%',
@@ -108,7 +112,12 @@ export default function Products() {
                 />
               </Box>
               <CardContent sx={{ p: 1.5 }}>
-                <Typography variant="subtitle2" fontWeight="bold" noWrap>
+                <Typography
+                  variant="subtitle2"
+                  fontWeight="bold"
+                  noWrap
+                  title={product.title}
+                >
                   {product.title}
                 </Typography>
                 <Typography
@@ -126,15 +135,14 @@ export default function Products() {
                   <Typography
                     variant="body2"
                     color="text.secondary"
-                    sx={{ textDecoration: 'line-through', fontSize: '0.75rem' }}
+                    sx={{
+                      textDecoration: 'line-through',
+                      fontSize: '0.75rem',
+                    }}
                   >
                     {product.originalPrice}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    color="green"
-                    fontWeight="bold"
-                  >
+                  <Typography variant="caption" color="success.main" fontWeight="bold">
                     {product.discount}
                   </Typography>
                 </Box>

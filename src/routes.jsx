@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import PrivateRoute from './components/auth/PrivateRoute';
 import Login from './components/auth/Login';
+import Signup from './components/auth/SignUp';
 
 
 const Home = lazy(() => import('./pages/Home'));
@@ -16,7 +17,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-
+      <Route path="/signup" element={<Signup />} />
      <Route
         element={
           <PrivateRoute>
