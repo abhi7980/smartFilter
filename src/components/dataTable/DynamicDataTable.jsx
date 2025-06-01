@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, TablePagination, TableSortLabel, TextField, IconButton, Tooltip,
-  Typography,
+  Typography, Box
 } from '@mui/material';
 import { SaveAlt as ExportIcon } from '@mui/icons-material';
 import * as XLSX from 'xlsx';
@@ -14,7 +14,7 @@ export default function DynamicDataTable({ columns, data, onRowClick, title }) {
   const [orderBy, setOrderBy] = useState(columnKeys[0]);
   const [order, setOrder] = useState('asc');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editingCell, setEditingCell] = useState({ row: null, column: null });
 
   const handleSort = (property) => {
@@ -45,28 +45,58 @@ export default function DynamicDataTable({ columns, data, onRowClick, title }) {
   };
 
   return (
-    <Paper elevation={3} sx={{ width: '100%', overflow: 'hidden', borderRadius: 2 }}>
-      <Tooltip title="Export to Excel">
-        <IconButton onClick={handleExport} sx={{ float: 'right', m: 1 }}>
-          <ExportIcon />
-        </IconButton>
-      </Tooltip>
+    <Paper
+      elevation={0}
+      sx={{
+        width: '100%',
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        p: 0,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          px: 2,
+          pt: 2,
+          pb: 1,
+          backgroundColor: '#fff',
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+          borderBottom: '1px solid #e0e0e0',
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          {title}
+        </Typography>
+        <Tooltip title="Export to Excel">
+          <IconButton onClick={handleExport}>
+            <ExportIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
-      <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', borderBottom: '1px solid #eee' }}>
-        {title}
-      </Typography>
-
-      <TableContainer>
+      <TableContainer
+        sx={{
+          backgroundColor: '#fff',
+          border: '1px solid #e0e0e0',
+          borderTop: 'none',
+          // borderBottomLeftRadius: 8,
+          // borderBottomRightRadius: 8,
+        }}
+      >
         <Table size="small" sx={{ minWidth: 650 }}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: 'primary.main' }}>
+            <TableRow sx={{ backgroundColor: 'primary.tableheader' }}>
               {columnKeys.map((key) => (
                 <TableCell
                   key={key}
                   sx={{
-                    color: 'white',
+                    color: 'primary.main',
                     fontWeight: 'bold',
-                    textTransform: 'uppercase',
+                    // textTransform: 'uppercase',
                     fontSize: 13,
                   }}
                 >
@@ -75,7 +105,7 @@ export default function DynamicDataTable({ columns, data, onRowClick, title }) {
                     direction={orderBy === key ? order : 'asc'}
                     onClick={() => handleSort(key)}
                     sx={{
-                      '& .MuiTableSortLabel-icon': { color: 'white !important' },
+                      '& .MuiTableSortLabel-icon': { color: 'primary.main' },
                     }}
                   >
                     {columns[key]}
@@ -95,7 +125,7 @@ export default function DynamicDataTable({ columns, data, onRowClick, title }) {
                   onClick={() => onRowClick?.(row)}
                   sx={{
                     cursor: 'pointer',
-                    '&:hover': { backgroundColor: '#f5f5f5' },
+                    // '&:hover': { backgroundColor: '#f5f5f5' },
                   }}
                 >
                   {columnKeys.map((key) => (
@@ -140,7 +170,12 @@ export default function DynamicDataTable({ columns, data, onRowClick, title }) {
           setRowsPerPage(parseInt(e.target.value, 10));
           setPage(0);
         }}
-        sx={{ borderTop: '1px solid #eee' }}
+        sx={{
+          borderTop: '1px solid #e0e0e0',
+          backgroundColor: '#fff',
+          // borderBottomLeftRadius: 8,
+          // borderBottomRightRadius: 8,
+        }}
       />
     </Paper>
   );
