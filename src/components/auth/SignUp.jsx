@@ -13,7 +13,8 @@ import {
   Typography
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import logo from '../../assets/images/logo.png'; // Adjust the path
+import logo from "../../assets/images/Logo.png"
+
 
 export default function Signup() {
   const [formData, setFormData] = useState({

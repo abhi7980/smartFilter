@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import useAuth from '../../hooks/useAuth';
-import logo from '../../assets/images/logo.png'; // Adjust the path to your logo
+import logo from '../../assets/images/Logo.png'; // Adjust the path to your logo
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
