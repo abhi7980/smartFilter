@@ -2,20 +2,20 @@ import { AppBar, Toolbar, IconButton, Typography, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import  useAuth  from '../../hooks/useAuth';
 
-export default function Navbar({ toggleSidebar }) {
+export default function Navbar() {
   const { user, logout } = useAuth();
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
-        <IconButton
+        {/* <IconButton
           color="inherit"
           edge="start"
           onClick={toggleSidebar}
           sx={{ mr: 2 }}
         >
           <MenuIcon />
-        </IconButton>
+        </IconButton> */}
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           My App
         </Typography>

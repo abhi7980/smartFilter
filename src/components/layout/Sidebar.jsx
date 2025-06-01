@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Drawer,
   List,
@@ -5,48 +6,112 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-} from '@mui/material';
-import { Link } from 'react-router-dom';
+  Tooltip,
+} from "@mui/material";
+import { Link, useLocation } from "react-router-dom";
 
-// Outlined icons with small size
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 
 const menuItems = [
-  { text: 'Home', icon: <HomeOutlinedIcon fontSize="small" />, path: '/' },
-  { text: 'Products', icon: <Inventory2OutlinedIcon fontSize="small" />, path: '/products' },
-  { text: 'Dashboard', icon: <DashboardOutlinedIcon fontSize="small" />, path: '/dashboard' },
-  { text: 'Profile', icon: <PersonOutlineOutlinedIcon fontSize="small" />, path: '/profile' },
-  { text: 'Settings', icon: <SettingsOutlinedIcon fontSize="small" />, path: '/settings' },
+  { text: "Home", icon: <HomeOutlinedIcon fontSize="small" />, path: "/" },
+  {
+    text: "Products",
+    icon: <Inventory2OutlinedIcon fontSize="small" />,
+    path: "/products",
+  },
+  {
+    text: "Dashboard",
+    icon: <DashboardOutlinedIcon fontSize="small" />,
+    path: "/dashboard",
+  },
+  {
+    text: "Profile",
+    icon: <PersonOutlineOutlinedIcon fontSize="small" />,
+    path: "/users",
+  },
+  // {
+  //   text: "Profile",
+  //   icon: <PersonOutlineOutlinedIcon fontSize="small" />,
+  //   path: "/profile",
+  // },
+  {
+    text: "Settings",
+    icon: <SettingsOutlinedIcon fontSize="small" />,
+    path: "/settings",
+  },
 ];
 
-export default function Sidebar({ open, onClose }) {
+export default function Sidebar() {
+  const location = useLocation();
+  const [expanded, setExpanded] = useState(false);
+
+  const drawerWidth = expanded ? 240 : 60;
+
   return (
     <Drawer
-      open={open}
-      onClose={onClose}
+      variant="permanent"
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
       sx={{
-        width: 240,
+        width: drawerWidth,
         flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 240,
-          boxSizing: 'border-box',
-          marginTop: '64px',
+        whiteSpace: "nowrap",
+        "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          transition: "width 0.3s",
+          boxSizing: "border-box",
+          marginTop: "64px",
+          overflowX: "hidden",
         },
       }}
     >
       <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton component={Link} to={item.path}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+
+          return (
+            <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
+              <Tooltip title={!expanded ? item.text : ""} placement="right">
+                <ListItemButton
+                  component={Link}
+                  to={item.path}
+                  selected={isActive}
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: expanded ? "initial" : "center",
+                    px: 2.5,
+                    "&.Mui-selected": {
+                      backgroundColor: "primary.main",
+                      color: "white",
+                    },
+                    "&.Mui-selected:hover": {
+                      backgroundColor: "primary.main", // Optional: darker on hover
+                    },
+                    "&:hover": {
+                      backgroundColor: "primary.highlight", // Optional: light hover for non-selected
+                    },
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: expanded ? 2 : "auto",
+                      justifyContent: "center",
+                      color: isActive ? "white" : "inherit",
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  {expanded && <ListItemText primary={item.text} />}
+                </ListItemButton>
+              </Tooltip>
+            </ListItem>
+          );
+        })}
       </List>
     </Drawer>
   );
