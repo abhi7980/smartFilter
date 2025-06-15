@@ -15,7 +15,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import useAuth from '../../hooks/useAuth';
 import logo from '../../assets/images/Logo.png'; // Adjust the path to your logo
-import loginUser from '../../networkHandler/services';
+import {loginUser} from '../../networkHandler/services';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
