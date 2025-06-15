@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   TextField,
   Checkbox,
@@ -16,9 +16,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import { addUser } from "../../../networkHandler/services";
+import { editUser } from "../../../networkHandler/services";
 
-export default function AddEditUser({setShouldUpdate, shouldUpdate}) {
+export default function EditUser({currentRowData, setShouldUpdate,shouldUpdate }) {
   const [formValues, setFormValues] = useState({
     Name: "",
     Email: "",
@@ -49,6 +49,30 @@ export default function AddEditUser({setShouldUpdate, shouldUpdate}) {
     multiple: true,
   });
 
+  useEffect(() => {
+  if (currentRowData) {
+    setFormValues({
+      Name: currentRowData.name || "",
+      Email: currentRowData.email || "",
+      Mobile: currentRowData.mobile || "",
+      UserName: currentRowData.userName || "",
+      Password: currentRowData.password || "",
+      Role: currentRowData.role || "",
+      Address: currentRowData.address || "",
+      Landmark: currentRowData.landmark || "",
+      Street: currentRowData.street || "",
+      City: currentRowData.city || "",
+      State: currentRowData.state || "",
+      PinCode: currentRowData.pinCode?.toString() || "",
+      AddressType: currentRowData.addressType || "",
+      Status: currentRowData.status || false,
+      id: currentRowData.id
+    });
+  }
+}, [currentRowData]);
+
+  console.log("data", currentRowData)
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormValues((prev) => ({
@@ -72,11 +96,11 @@ export default function AddEditUser({setShouldUpdate, shouldUpdate}) {
     };
 
     // Call the API
-    const response = await addUser(userData);
-    
+    const response = await editUser(userData);
+     setShouldUpdate(!shouldUpdate)
     // Handle success
     setStatus("success");
-    setMessage("User added successfully!");
+    setMessage("User edited successfully!");
     setFormValues({
       Name: "",
       Email: "",
@@ -94,20 +118,15 @@ export default function AddEditUser({setShouldUpdate, shouldUpdate}) {
       Status: false,
     });
     setFiles([]);
-    setShouldUpdate(!shouldUpdate)
   } catch (err) {
-    console.error("Error adding user:", err);
+    console.error("Error editing user:", err);
     setStatus("error");
-    setMessage(err?.message || "Failed to add user. Please try again.");
+    setMessage(err?.message || "Failed to edit user. Please try again.");
   }
 };
 
   return (
-    <Container maxWidth="md" sx={{ py: 5 }}>
-      <Typography variant="h5" gutterBottom fontWeight="bold">
-        Add User
-      </Typography>
-
+    <Container maxWidth="md" sx={{ py: 2 }}>
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           {[

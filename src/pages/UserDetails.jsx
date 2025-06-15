@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import DynamicDataTable from '../components/dataTable/DynamicDataTable';
-import { getUsers } from '../networkHandler/services'; 
+import { deleteUser, getUsers } from '../networkHandler/services'; 
 import Cookies from 'js-cookie';
-
+import AddEditUser from '../components/forms/users/AddEditUser'
+import EditUser from '../components/forms/users/EditUsers';
 const columns = {
   id: 'ID',
   name: 'Name',
@@ -27,7 +28,7 @@ const columns = {
 export default function UserDetails() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [shouldUpdate, setShouldUpdate] = useState(false)
 
   const PUID = JSON.parse(Cookies.get("user"))?.id
 
@@ -49,10 +50,16 @@ export default function UserDetails() {
       setLoading(false);
     }
   };
+  
+    const handleDelete = async (id) => {
+      console.log(id)
+      await deleteUser({id:id})
+      setShouldUpdate(!shouldUpdate)
+    }
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [shouldUpdate]);
 
   const handleRowClick = (row) => {
     alert(`You clicked on ${row.name}`);
@@ -65,6 +72,11 @@ export default function UserDetails() {
       data={data}
       loading={loading}
       onRowClick={handleRowClick}
+      // addComponent={(props) => <AddEditUser {...props shouldUpdate={shouldUpdate}} />}
+      addComponent={(props) => <AddEditUser {...props} setShouldUpdate={setShouldUpdate} shouldUpdate={shouldUpdate}/>}
+
+      editComponent={(props) => <EditUser {...props} setShouldUpdate={setShouldUpdate} shouldUpdate={shouldUpdate}/>}
+      handleDelete={handleDelete}
     />
   );
 }

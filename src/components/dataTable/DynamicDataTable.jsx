@@ -13,16 +13,37 @@ import {
   IconButton,
   Typography,
   Skeleton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
-export default function DynamicDataTable({ columns, data, onRowClick, title, loading }) {
+export default function DynamicDataTable({
+  columns,
+  data,
+  onRowClick,
+  title,
+  loading,
+  onSave,
+  onDelete,
+  addComponent,
+  editComponent,
+  handleDelete
+}) {
   const [rows, setRows] = useState([]);
-  const [editingCell, setEditingCell] = useState({ row: null, column: null });
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [currentRow, setCurrentRow] = useState(null);
+  const [newRow, setNewRow] = useState({});
 
   // Set initial rows from props
   useEffect(() => {
@@ -31,17 +52,48 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
 
   const columnKeys = Object.keys(columns || {});
 
-  const handleEdit = (rowIndex, columnKey, value) => {
-    const newRows = [...rows];
-    newRows[rowIndex][columnKey] = value;
-    setRows(newRows);
+  const handleEdit = (rowIndex) => {
+    setCurrentRow({ ...rows[rowIndex], _originalIndex: rowIndex });
+    setEditModalOpen(true);
+    
   };
 
-  const handleDelete = (rowIndex) => {
-    const newRows = [...rows];
-    newRows.splice(rowIndex, 1);
-    setRows(newRows);
+  const handleSaveEdit = () => {
+    if (currentRow) {
+      const newRows = [...rows];
+      newRows[currentRow._originalIndex] = currentRow;
+      setRows(newRows);
+      if (onSave) onSave(currentRow);
+      setEditModalOpen(false);
+    }
   };
+
+  const handleAddNew = () => {
+    const emptyRow = columnKeys.reduce((acc, key) => {
+      acc[key] = "";
+      return acc;
+    }, {});
+    setNewRow(emptyRow);
+    setAddModalOpen(true);
+  };
+
+  const handleSaveNew = () => {
+    if (newRow) {
+      const updatedRows = [...rows, newRow];
+      setRows(updatedRows);
+      if (onSave) onSave(newRow);
+      setAddModalOpen(false);
+      setNewRow({});
+    }
+  };
+
+  // const handleDelete = (rowIndex) => {
+  //   const rowToDelete = rows[rowIndex];
+  //   const newRows = [...rows];
+  //   newRows.splice(rowIndex, 1);
+  //   setRows(newRows);
+  //   if (onDelete) onDelete(rowToDelete);
+  // };
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -64,9 +116,18 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", mt: 2 }}>
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
         <Typography variant="h6">{title || "Table"}</Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddNew}
+          disabled={loading}
+        >
+          Add New
+        </Button>
       </Box>
+
       <TableContainer sx={{ maxHeight: 500 }}>
         <Table stickyHeader>
           <TableHead>
@@ -78,7 +139,11 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
                   sx={{ cursor: "pointer" }}
                 >
                   {columns[key]}
-                  {sortConfig.key === key ? (sortConfig.direction === "asc" ? " ↑" : " ↓") : ""}
+                  {sortConfig.key === key
+                    ? sortConfig.direction === "asc"
+                      ? " ↑"
+                      : " ↓"
+                    : ""}
                 </TableCell>
               ))}
               <TableCell>Actions</TableCell>
@@ -94,7 +159,12 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
                       </TableCell>
                     ))}
                     <TableCell>
-                      <Skeleton variant="circular" width={24} height={24} sx={{ mr: 1 }} />
+                      <Skeleton
+                        variant="circular"
+                        width={24}
+                        height={24}
+                        sx={{ mr: 1 }}
+                      />
                       <Skeleton variant="circular" width={24} height={24} />
                     </TableCell>
                   </TableRow>
@@ -106,40 +176,20 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
                       key={rowIndex}
                       hover
                       onClick={() => onRowClick?.(row)}
-                      sx={{ cursor: "pointer" }}
+                      sx={{ cursor: onRowClick ? "pointer" : "default" }}
                     >
                       {columnKeys.map((key) => (
-                        <TableCell
-                          key={key}
-                          onDoubleClick={() =>
-                            setEditingCell({ row: rowIndex + page * rowsPerPage, column: key })
-                          }
-                        >
-                          {editingCell.row === rowIndex + page * rowsPerPage &&
-                          editingCell.column === key ? (
-                            <TextField
-                              variant="standard"
-                              value={rows[rowIndex + page * rowsPerPage][key]}
-                              onChange={(e) =>
-                                handleEdit(rowIndex + page * rowsPerPage, key, e.target.value)
-                              }
-                              onBlur={() => setEditingCell({ row: null, column: null })}
-                              autoFocus
-                              size="small"
-                              fullWidth
-                            />
-                          ) : (
-                            <Typography variant="body2">
-                              {row[key] != null ? row[key].toString() : ""}
-                            </Typography>
-                          )}
+                        <TableCell key={key}>
+                          <Typography variant="body2">
+                            {row[key] != null ? row[key].toString() : ""}
+                          </Typography>
                         </TableCell>
                       ))}
                       <TableCell>
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            setEditingCell({ row: rowIndex + page * rowsPerPage, column: null });
+                            handleEdit(rowIndex + page * rowsPerPage);
                           }}
                         >
                           <EditIcon fontSize="small" />
@@ -147,7 +197,8 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(rowIndex + page * rowsPerPage);
+                            console.log(data[rowIndex].id)
+                            handleDelete(data[rowIndex].id);
                           }}
                         >
                           <DeleteIcon fontSize="small" />
@@ -158,6 +209,7 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
           </TableBody>
         </Table>
       </TableContainer>
+
       <TablePagination
         component="div"
         count={rows.length}
@@ -170,6 +222,34 @@ export default function DynamicDataTable({ columns, data, onRowClick, title, loa
         }}
         disabled={loading}
       />
+
+      {/* Edit Modal */}
+      <Dialog open={editModalOpen} scroll="body" onClose={() => setEditModalOpen(false)}>
+        <DialogTitle>Edit Row</DialogTitle>
+        <DialogContent>
+          {editComponent({currentRowData:currentRow})}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditModalOpen(false)}>Close</Button>
+          {/* <Button onClick={handleSaveEdit} variant="contained">
+            Save
+          </Button> */}
+        </DialogActions>
+      </Dialog>
+
+      {/* Add New Modal */}
+      <Dialog open={addModalOpen}  scroll="body" onClose={() => setAddModalOpen(false)}>
+        <DialogTitle>Add New Row</DialogTitle>
+        <DialogContent>
+         {addComponent()}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAddModalOpen(false)}>Close</Button>
+          {/* <Button onClick={handleSaveNew} variant="contained">
+            Add
+          </Button> */}
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }
