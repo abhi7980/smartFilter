@@ -153,7 +153,7 @@ export default function FormGenerator({ fields, values, onChange, title }) {
         boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
       }}
     >
-      <Typography variant="h5" fontWeight="bold" mb={4}>
+      <Typography textAlign={"center"} variant="h5" fontWeight="bold" mb={4}>
         {title}
       </Typography>
 

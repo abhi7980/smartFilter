@@ -15,16 +15,19 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import useAuth from '../../hooks/useAuth';
 import logo from '../../assets/images/Logo.png'; // Adjust the path to your logo
+import loginUser from '../../networkHandler/services';
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login({ email, name: 'John Doe' });
+    const userData = await loginUser(username, password, true );
+
+    login(userData);
     navigate('/');
   };
 
@@ -77,18 +80,18 @@ export default function Login() {
               Sign In
             </Typography>
             <Typography variant="body2" gutterBottom>
-              Access your Gyankendram dashboard
+              Access your SMartFilter dashboard
             </Typography>
 
             <Box component="form" onSubmit={handleSubmit} mt={2}>
               <Stack spacing={2}>
                 <TextField
-                  label="Email"
-                  type="email"
+                  label="Username"
+                  type="text"
                   fullWidth
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
                 <TextField
                   label="Password"

@@ -26,21 +26,21 @@ export default function Settings() {
         }}
       >
         <FormGenerator
-          // title={"Add Product"}
-          title={"Add User"}
-          // fields={[
-          //   { name: 'name', label: 'Name', type: 'text' },
-          //   { name: 'description', label: 'Description', type: 'text' },
-          //   { name: 'rental-amount', label: 'Amount', type: 'text' },
-          //   { name: 'images', type: 'image-drop' },
-          // ]}
-
+          title={"Add Product"}
+          // title={"Add User"}
           fields={[
-            { name: "name", label: "Name", type: "text" },
-            { name: "email", label: "Email", type: "email" },
-            { name: "mobile", label: "Mobile", type: "text" },
-            { name: "address", label: "Address", type: "text" },
+            { name: 'name', label: 'Name', type: 'text' },
+            { name: 'description', label: 'Description', type: 'text' },
+            { name: 'rental-amount', label: 'Amount', type: 'text' },
+            { name: 'images', type: 'image-drop' },
           ]}
+
+          // fields={[
+          //   { name: "name", label: "Name", type: "text" },
+          //   { name: "email", label: "Email", type: "email" },
+          //   { name: "mobile", label: "Mobile", type: "text" },
+          //   { name: "address", label: "Address", type: "text" },
+          // ]}
           values={formValues}
           onChange={(updated) => setFormValues(updated)}
         />
