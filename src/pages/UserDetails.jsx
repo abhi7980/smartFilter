@@ -111,6 +111,10 @@ const data = [
 
 
 export default function UserDetails() {
+
+  
+
+
   const handleRowClick = (row) => {
     alert(`You clicked on ${row.name}`);
   };
