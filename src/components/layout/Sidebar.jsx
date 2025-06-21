@@ -23,10 +23,15 @@ const menuItems = [
     icon: <Inventory2OutlinedIcon fontSize="small" />,
     path: "/products",
   },
-  {
-    text: "Dashboard",
+  // {
+  //   text: "Dashboard",
+  //   icon: <DashboardOutlinedIcon fontSize="small" />,
+  //   path: "/dashboard",
+  // },
+   {
+    text: "Rentals",
     icon: <DashboardOutlinedIcon fontSize="small" />,
-    path: "/dashboard",
+    path: "/rental",
   },
   {
     text: "Users",
@@ -38,11 +43,11 @@ const menuItems = [
   //   icon: <PersonOutlineOutlinedIcon fontSize="small" />,
   //   path: "/profile",
   // },
-  {
-    text: "Settings",
-    icon: <SettingsOutlinedIcon fontSize="small" />,
-    path: "/settings",
-  },
+  // {
+  //   text: "Settings",
+  //   icon: <SettingsOutlinedIcon fontSize="small" />,
+  //   path: "/settings",
+  // },
 ];
 
 export default function Sidebar() {

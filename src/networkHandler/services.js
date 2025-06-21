@@ -27,7 +27,7 @@ export const getUsers = async ({
   Search = '',
   CrudAction = 'VIEW',
   Slug = 'user',
-  PUID = '',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
   ...otherFilters
 } = {}) => {
   const queryParams = {
@@ -140,3 +140,239 @@ export const deleteUser = async ({
   }
 };
 
+
+export const getProducts = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'VIEW',
+  Slug = 'product',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+
+  try {
+    const response = await postRequest('api/Product/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+export const addProduct = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'ADD',
+  Slug = 'product',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+console.log("addProduct",  queryParams);
+  try {
+    const response = await postRequest('api/Product/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+
+export const editProduct = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'EDIT',
+  Slug = 'product',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+
+  try {
+    const response = await postRequest('api/Product/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+export const deleteProduct = async ({
+  CrudAction = 'DELETE',
+  Slug = 'product',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  id,
+} = {}) => {
+  const queryParams = {
+    CrudAction,
+    Slug,
+    PUID,
+    id,
+  };
+
+  console.log("queryParams",queryParams)
+
+  try {
+    const response = await postRequest('api/Product/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+
+export const getRental = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'VIEW',
+  Slug = 'rental',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+
+  try {
+    const response = await postRequest('api/RentalPlan/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+export const addRental = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'ADD',
+  Slug = 'rental',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+
+  try {
+    const response = await postRequest('api/RentalPlan/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+export const editRental = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'EDIT',
+  Slug = 'rental',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+
+  try {
+    const response = await postRequest('api/RentalPlan/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+
+export const deleteRental = async ({
+  CrudAction = 'DELETE',
+  Slug = 'rental',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  id,
+} = {}) => {
+  const queryParams = {
+    CrudAction,
+    Slug,
+    PUID,
+    id,
+  };
+
+  console.log("queryParams",queryParams)
+
+  try {
+    const response = await postRequest('api/RentalPlan/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
