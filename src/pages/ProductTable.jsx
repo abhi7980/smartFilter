@@ -6,7 +6,7 @@ import AddProduct from '../components/forms/product/AddProduct';
 import EditProduct from '../components/forms/product/EditProduct';
 
 const columns = {
-  id: 'ID',
+  // id: 'ID',
   name: 'Name',
   about: 'Description',
   price: 'Price',

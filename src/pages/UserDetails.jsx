@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import AddEditUser from '../components/forms/users/AddEditUser'
 import EditUser from '../components/forms/users/EditUsers';
 const columns = {
-  id: 'ID',
+  // id: 'ID',
   name: 'Name',
   email: 'Email',
   userName: 'Username',
@@ -19,8 +19,8 @@ const columns = {
   state: 'State',
   city: 'City',
   pinCode: 'PIN Code',
-  latitude: 'Latitude',
-  longitude: 'Longitude',
+  // latitude: 'Latitude',
+  // longitude: 'Longitude',
   status: 'Status',
   regDate: 'Registration Date',
 };
@@ -32,7 +32,9 @@ export default function UserDetails() {
 
   const PUID = JSON.parse(Cookies.get("user"))?.id
 
-  console.log(PUID)
+
+
+  console.log(PUID, "puid")
 
   const fetchUsers = async () => {
     try {
@@ -41,7 +43,7 @@ export default function UserDetails() {
         PageSize: 100,
         CrudAction: 'VIEW',
         Slug: 'user',
-        PUID: 63884721222350,
+        PUID: PUID,
       });
       setData(response?.data || []);
     } catch (err) {

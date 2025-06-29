@@ -30,7 +30,7 @@ export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
   IPAddress: "",
   ViewOrder: "",
   Status: false,
-  RegDate: "",
+  // RegDate: "",
   About: "",            // <-- new field
   Price: "",            // <-- new field
   DepositAmount: "",    // <-- new field
@@ -88,7 +88,7 @@ export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
         IPAddress: "",
         ViewOrder: "",
         Status: false,
-        RegDate: "",
+        // RegDate: "",
       });
       setFiles([]);
       setShouldUpdate(!shouldUpdate);
@@ -113,7 +113,7 @@ export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
                 <TextField
                   fullWidth
                   type={field.toLowerCase().includes("date") ? "datetime-local" : "text"}
-                  label={field}
+                  label={field.toLowerCase().includes("date") ? "" : field}
                   name={field}
                   value={value}
                   onChange={handleChange}

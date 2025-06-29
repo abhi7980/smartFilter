@@ -55,7 +55,7 @@ export default function DynamicDataTable({
   const handleEdit = (rowIndex) => {
     setCurrentRow({ ...rows[rowIndex], _originalIndex: rowIndex });
     setEditModalOpen(true);
-    
+
   };
 
   const handleSaveEdit = () => {
@@ -132,6 +132,7 @@ export default function DynamicDataTable({
         <Table stickyHeader>
           <TableHead>
             <TableRow>
+              <TableCell>#</TableCell> {/* Serial Number Header */}
               {columnKeys.map((key) => (
                 <TableCell
                   key={key}
@@ -152,61 +153,63 @@ export default function DynamicDataTable({
           <TableBody>
             {loading
               ? Array.from({ length: rowsPerPage }).map((_, i) => (
-                  <TableRow key={i}>
-                    {columnKeys.map((_, j) => (
-                      <TableCell key={j}>
-                        <Skeleton variant="text" width="80%" />
+                <TableRow key={i}>
+                  <TableCell>{page * rowsPerPage + i + 1}</TableCell> {/* Skeleton Serial */}
+                  {columnKeys.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton variant="text" width="80%" />
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    <Skeleton
+                      variant="circular"
+                      width={24}
+                      height={24}
+                      sx={{ mr: 1 }}
+                    />
+                    <Skeleton variant="circular" width={24} height={24} />
+                  </TableCell>
+                </TableRow>
+              ))
+              : sortedRows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, rowIndex) => (
+                  <TableRow
+                    key={rowIndex}
+                    hover
+                    onClick={() => onRowClick?.(row)}
+                    sx={{ cursor: onRowClick ? "pointer" : "default" }}
+                  >
+                    <TableCell>{page * rowsPerPage + rowIndex + 1}</TableCell> {/* Serial Number */}
+                    {columnKeys.map((key) => (
+                      <TableCell key={key}>
+                        <Typography variant="body2">
+                          {row[key] != null ? row[key].toString() : ""}
+                        </Typography>
                       </TableCell>
                     ))}
                     <TableCell>
-                      <Skeleton
-                        variant="circular"
-                        width={24}
-                        height={24}
-                        sx={{ mr: 1 }}
-                      />
-                      <Skeleton variant="circular" width={24} height={24} />
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(rowIndex + page * rowsPerPage);
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(data[rowIndex].id);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
-                ))
-              : sortedRows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, rowIndex) => (
-                    <TableRow
-                      key={rowIndex}
-                      hover
-                      onClick={() => onRowClick?.(row)}
-                      sx={{ cursor: onRowClick ? "pointer" : "default" }}
-                    >
-                      {columnKeys.map((key) => (
-                        <TableCell key={key}>
-                          <Typography variant="body2">
-                            {row[key] != null ? row[key].toString() : ""}
-                          </Typography>
-                        </TableCell>
-                      ))}
-                      <TableCell>
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(rowIndex + page * rowsPerPage);
-                          }}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            console.log(data[rowIndex].id)
-                            handleDelete(data[rowIndex].id);
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                ))}
           </TableBody>
+
         </Table>
       </TableContainer>
 
@@ -227,7 +230,7 @@ export default function DynamicDataTable({
       <Dialog open={editModalOpen} scroll="body" onClose={() => setEditModalOpen(false)}>
         <DialogTitle>Edit Row</DialogTitle>
         <DialogContent>
-          {editComponent({currentRowData:currentRow})}
+          {editComponent({ currentRowData: currentRow })}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditModalOpen(false)}>Close</Button>
@@ -238,10 +241,10 @@ export default function DynamicDataTable({
       </Dialog>
 
       {/* Add New Modal */}
-      <Dialog open={addModalOpen}  scroll="body" onClose={() => setAddModalOpen(false)}>
+      <Dialog open={addModalOpen} scroll="body" onClose={() => setAddModalOpen(false)}>
         <DialogTitle>Add New Row</DialogTitle>
         <DialogContent>
-         {addComponent()}
+          {addComponent()}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setAddModalOpen(false)}>Close</Button>

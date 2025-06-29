@@ -34,7 +34,7 @@ export default function EditProduct({
     IPAddress: "",
     ViewOrder: "",
     Status: false,
-    RegDate: "",
+    // RegDate: "",
     About: "", // <-- new field
     Price: "", // <-- new field
     DepositAmount: "", // <-- new field
@@ -66,7 +66,7 @@ export default function EditProduct({
         IPAddress: currentRowData.ipAddress || "",
         ViewOrder: currentRowData.viewOrder || "",
         Status: currentRowData.status || false,
-        RegDate: currentRowData.regDate || "",
+        // RegDate: currentRowData.regDate || "",
         About: currentRowData.about || "",
         Price: currentRowData.price || "",
         DepositAmount: currentRowData.depositAmount || "",

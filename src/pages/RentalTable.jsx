@@ -7,7 +7,7 @@ import EditUser from "../components/forms/users/EditUsers";
 import AddRental from "../components/forms/rental/AddRental";
 import EditRental from "../components/forms/rental/EditRental";
 const columns = {
-  id: "ID",
+  // id: "ID",
   name: "Name",
   about: "Description",
   amount: "Amount",
@@ -31,7 +31,7 @@ export default function RentalTable() {
         PageSize: 100,
         CrudAction: "VIEW",
         Slug: "user",
-        PUID: 63884721222350,
+        PUID: PUID,
       });
       setData(response?.data || []);
     } catch (err) {

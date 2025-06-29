@@ -17,7 +17,7 @@ export default function Navbar() {
           <MenuIcon />
         </IconButton> */}
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          My App
+          Smart Filters
         </Typography>
         {user ? (
           <Button color="inherit" onClick={logout}>

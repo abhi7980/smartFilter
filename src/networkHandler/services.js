@@ -1,4 +1,4 @@
-import { postRequest } from './network';
+import { postRequest, getRequest } from './network';
 import Cookies from 'js-cookie';
 
 export const loginUser = async (username, password, useQueryParams = false) => {
@@ -368,6 +368,63 @@ export const deleteRental = async ({
 
   try {
     const response = await postRequest('api/RentalPlan/manage', queryParams, {
+      asQueryParams: true,
+    });
+    return response;
+  } catch (err) {
+    console.error('Fetching users failed:', err?.message || err);
+    throw err;
+  }
+};
+
+
+// get city
+
+
+export const getCityState = async () => {
+  try {
+    const response = await getRequest('/api/StaticData/state-city');
+    return response;
+  } catch (err) {
+    console.error('Fetching cities failed:', err?.message || err);
+    throw err;
+  }
+};
+
+
+export const getRoles = async () => {
+  try {
+    const response = await getRequest('/api/StaticData/roles');
+    return response;
+  } catch (err) {
+    console.error('Fetching cities failed:', err?.message || err);
+    throw err;
+  }
+};
+
+
+// my product-admin
+export const getMyproductsAdmin = async ({
+  PageNo = 1,
+  PageSize = 10,
+  Search = '',
+  CrudAction = 'VIEW',
+  Slug = 'myproduct',
+  PUID = JSON.parse(Cookies.get("user"))?.id,
+  ...otherFilters
+} = {}) => {
+  const queryParams = {
+    PageNo,
+    PageSize,
+    Search,
+    CrudAction,
+    Slug,
+    PUID,
+    ...otherFilters, // e.g., filters like Name, Email, etc.
+  };
+
+  try {
+    const response = await postRequest('api/MyProduct/manage', queryParams, {
       asQueryParams: true,
     });
     return response;
