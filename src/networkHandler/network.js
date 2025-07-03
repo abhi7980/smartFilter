@@ -53,3 +53,20 @@ export const postRequest = async (url, data = {}, options = {}) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const getRequest = async (url, params = {}, options = {}) => {
+  const { asQueryParams = true } = options;
+
+  try {
+    const config = {};
+
+    if (asQueryParams) {
+      config.params = params;
+    }
+
+    const response = await api.get(url, config);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

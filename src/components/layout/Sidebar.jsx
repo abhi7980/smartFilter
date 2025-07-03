@@ -15,34 +15,48 @@ import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import HomeWorkOutlinedIcon from '@mui/icons-material/HomeWorkOutlined';
+import DevicesOtherOutlinedIcon from '@mui/icons-material/DevicesOtherOutlined';
 
 const menuItems = [
+    {
+    text: "Dashboard",
+    icon: <DashboardOutlinedIcon fontSize="small" />,
+    path: "/dashboard",
+  },
   { text: "Home", icon: <HomeOutlinedIcon fontSize="small" />, path: "/" },
   {
     text: "Products",
     icon: <Inventory2OutlinedIcon fontSize="small" />,
     path: "/products",
   },
-  {
-    text: "Dashboard",
-    icon: <DashboardOutlinedIcon fontSize="small" />,
-    path: "/dashboard",
-  },
+   {
+  text: "Rentals",
+  icon: <HomeWorkOutlinedIcon fontSize="small" />,
+  path: "/rental",
+}
+,
   {
     text: "Users",
     icon: <PersonOutlineOutlinedIcon fontSize="small" />,
     path: "/users",
   },
+  {
+  text: "Customer Devices",
+  icon: <DevicesOtherOutlinedIcon fontSize="small" />,
+  path: "/customer-devices",
+}
+
   // {
   //   text: "Profile",
   //   icon: <PersonOutlineOutlinedIcon fontSize="small" />,
   //   path: "/profile",
   // },
-  {
-    text: "Settings",
-    icon: <SettingsOutlinedIcon fontSize="small" />,
-    path: "/settings",
-  },
+  // {
+  //   text: "Settings",
+  //   icon: <SettingsOutlinedIcon fontSize="small" />,
+  //   path: "/settings",
+  // },
 ];
 
 export default function Sidebar() {

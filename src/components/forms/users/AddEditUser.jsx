@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   TextField,
   Checkbox,
@@ -14,10 +14,13 @@ import {
   ListItemText,
   Alert,
   CircularProgress,
+  MenuItem,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
+import axios from "axios";
+import { addUser, getCityState, getRoles } from "../../../networkHandler/services";
 
-export default function Settings() {
+export default function AddEditUser({ setShouldUpdate, shouldUpdate }) {
   const [formValues, setFormValues] = useState({
     Name: "",
     Email: "",
@@ -36,8 +39,13 @@ export default function Settings() {
   });
 
   const [files, setFiles] = useState([]);
-  const [status, setStatus] = useState("idle"); // idle | submitting | success | error
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+
+  const [roles, setRoles] = useState([]);
+  const [addressTypes, setAddressTypes] = useState(["Home","Office"]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
 
   const onDrop = useCallback((acceptedFiles) => {
     setFiles((prev) => [...prev, ...acceptedFiles]);
@@ -48,62 +56,89 @@ export default function Settings() {
     multiple: true,
   });
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value, type, checked } = e.target;
+    console.log(name, value, type, checked)
     setFormValues((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+
+    // Dynamically fetch cities when state changes
+    if (name === "State") {
+      try {
+        const res = await getCityState();
+        console.log()
+        setCities(res.find((item) => item.state === value).city || []);
+        setFormValues((prev) => ({ ...prev, City: "" })); // reset city
+      } catch (err) {
+        console.error("Error fetching cities:", err);
+        setCities([]);
+      }
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");
     setMessage("");
 
-    const formData = new FormData();
-    Object.entries(formValues).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
+    try {
+      const userData = {
+        ...formValues,
+        Status: formValues.Status,
+      };
 
-    fetch("https://your-api-url.com/api/AddUser", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((data) => {
-        setStatus("success");
-        setMessage("Form submitted successfully!");
-        setFormValues({
-          Name: "",
-          Email: "",
-          Mobile: "",
-          UserName: "",
-          Password: "",
-          Role: "",
-          Address: "",
-          Landmark: "",
-          Street: "",
-          City: "",
-          State: "",
-          PinCode: "",
-          AddressType: "",
-          Status: false,
-        });
-        setFiles([]);
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-        setStatus("error");
-        setMessage("There was an error submitting the form.");
+      const response = await addUser(userData);
+
+      setStatus("success");
+      setMessage("User added successfully!");
+      setFormValues({
+        Name: "",
+        Email: "",
+        Mobile: "",
+        UserName: "",
+        Password: "",
+        Role: "",
+        Address: "",
+        Landmark: "",
+        Street: "",
+        City: "",
+        State: "",
+        PinCode: "",
+        AddressType: "",
+        Status: false,
       });
+      setFiles([]);
+      setShouldUpdate(!shouldUpdate);
+    } catch (err) {
+      console.error("Error adding user:", err);
+      setStatus("error");
+      setMessage(err?.message || "Failed to add user. Please try again.");
+    }
   };
+
+  // Fetch all dropdown data
+ useEffect(() => {
+  const fetchDropdowns = async () => {
+    try {
+      // const [roleRes, addressTypeRes, stateRes] = await Promise.all([
+      //   axios.get("/api/roles"),
+      //   axios.get("/api/address-types"),
+      //   axios.get("/api/states"),
+      // ]);
+      const stateRes=await getCityState()
+      const roleRes=await getRoles()
+      console.log(roleRes,"roles")
+      setRoles(Array.isArray(roleRes) ? roleRes :  []);
+      // setAddressTypes(Array.isArray(addressTypeRes.data) ? addressTypeRes.data : addressTypeRes.data.data || []);
+      setStates(Array.isArray(stateRes) ? stateRes.map((state,id)=>(state.state)) : []);
+    } catch (err) {
+      console.error("Dropdown data load error:", err);
+    }
+  };
+  fetchDropdowns();
+}, []);
 
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
@@ -129,14 +164,85 @@ export default function Settings() {
             "AddressType",
           ].map((field) => (
             <Grid item xs={12} sm={6} key={field}>
-              <TextField
-                fullWidth
-                type={field === "Password" ? "password" : "text"}
-                label={field}
-                name={field}
-                value={formValues[field]}
-                onChange={handleChange}
-              />
+              {field === "Role" ? (
+                <TextField
+                  sx={{minWidth:"14.5rem"}}
+                  select
+                  fullWidth
+                  label="Role"
+                  name="Role"
+                  value={formValues.Role}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">Select Role</MenuItem>
+                  {roles.map((role) => (
+                    <MenuItem key={role.id || role} value={role.id || role}>
+                      {role.name || role}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              ) : field === "AddressType" ? (
+                <TextField
+                  select
+                  sx={{minWidth:"14.5rem"}}
+                  fullWidth
+                  label="Address Type"
+                  name="AddressType"
+                  value={formValues.AddressType}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">Select Address Type</MenuItem>
+                  {addressTypes.map((type) => (
+                    <MenuItem key={type.id || type} value={type.id || type}>
+                      {type.name || type}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              ) : field === "State" ? (
+                <TextField
+                  select
+                  sx={{minWidth:"14.5rem"}}
+                  fullWidth
+                  label="State"
+                  name="State"
+                  value={formValues.State}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">Select State</MenuItem>
+                  {states.map((s) => (
+                    <MenuItem key={s.id || s} value={s.id || s}>
+                      {s.name || s}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              ) : field === "City" ? (
+                <TextField
+                  select
+                  sx={{minWidth:"14.5rem"}}
+                  fullWidth
+                  label="City"
+                  name="City"
+                  value={formValues.City}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="">Select City</MenuItem>
+                  {cities.map((c) => (
+                    <MenuItem key={c.id || c} value={c.id || c}>
+                      {c.name || c}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              ) : (
+                <TextField
+                  fullWidth
+                  sx={{minWidth:"14.5rem"}}
+                  type={field === "Password" ? "password" : "text"}
+                  label={field}
+                  name={field}
+                  value={formValues[field]}
+                  onChange={handleChange}
+                />
+              )}
             </Grid>
           ))}
 
@@ -191,8 +297,16 @@ export default function Settings() {
 
           <Grid item xs={12} py={2}>
             <Box textAlign="center">
-              <Button type="submit" variant="contained" disabled={status === "submitting"}>
-                {status === "submitting" ? <CircularProgress size={24} /> : "Submit"}
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={status === "submitting"}
+              >
+                {status === "submitting" ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </Box>
           </Grid>
