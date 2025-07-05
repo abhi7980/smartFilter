@@ -35,7 +35,7 @@ export default function DynamicDataTable({
   addComponent,
   editComponent,
   handleDelete,
-  onToggle
+  onToggle,
 }) {
   const [rows, setRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -45,6 +45,8 @@ export default function DynamicDataTable({
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
 
   const baseURL = import.meta.env.VITE_BASE_URL || "";
 
@@ -62,10 +64,6 @@ export default function DynamicDataTable({
   };
 
   const handleAddNew = () => {
-    const emptyRow = columnKeys.reduce((acc, key) => {
-      acc[key] = "";
-      return acc;
-    }, {});
     setAddModalOpen(true);
   };
 
@@ -75,21 +73,6 @@ export default function DynamicDataTable({
       direction = "desc";
     }
     setSortConfig({ key, direction });
-  };
-
-  const handleStatusToggle = (row, key) => {
-    const updatedRow = {
-      ...row,
-      [key]: !row[key],
-    };
-
-    // Optional: Call external save function
-    onSave?.(updatedRow);
-
-    const updatedRows = rows.map((r) =>
-      r.id === row.id ? updatedRow : r
-    );
-    setRows(updatedRows);
   };
 
   const sortedRows = React.useMemo(() => {
@@ -204,6 +187,16 @@ export default function DynamicDataTable({
                                 />
                               );
                             })()
+                          ) : key === "deviceStatus" ? (
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: "bold",
+                                color: row[key] ? "green" : "red",
+                              }}
+                            >
+                              {row[key] ? "ON" : "OFF"}
+                            </Typography>
                           ) : key.toLowerCase() === "status" ? (
                             <Switch
                               checked={Boolean(row[key])}
@@ -230,7 +223,8 @@ export default function DynamicDataTable({
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(row.id);
+                            setRowToDelete(row);
+                            setDeleteModalOpen(true);
                           }}
                         >
                           <DeleteIcon fontSize="small" />
@@ -297,6 +291,40 @@ export default function DynamicDataTable({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setPreviewImage(null)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog
+        open={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this item?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setDeleteModalOpen(false)}
+            variant="outlined"
+            color="primary"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (rowToDelete) {
+                handleDelete(rowToDelete.id);
+              }
+              setDeleteModalOpen(false);
+            }}
+            variant="contained"
+            color="error"
+          >
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>

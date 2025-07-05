@@ -37,7 +37,7 @@ export const editUser = async ({ files = [], ...fields }) => {
 };
 
 export const deleteUser = async (id) => {
-  return postRequest('api/User/manage', createPayload('DELETE', 'user', { id }));
+  return postRequest('api/User/manage', createPayload('DELETE', 'user', id));
 };
 
 // ----------------------- PRODUCT -----------------------
@@ -55,7 +55,7 @@ export const editProduct = async ({ files = [], ...fields }) => {
 };
 
 export const deleteProduct = async (id) => {
-  return postRequest('api/Product/manage', createPayload('DELETE', 'product', { id }));
+  return postRequest('api/Product/manage', createPayload('DELETE', 'product', id));
 };
 
 // ----------------------- RENTAL -----------------------
@@ -73,7 +73,7 @@ export const editRental = async ({ files = [], ...fields }) => {
 };
 
 export const deleteRental = async (id) => {
-  return postRequest('api/RentalPlan/manage', createPayload('DELETE', 'rental', { id }));
+  return postRequest('api/RentalPlan/manage', createPayload('DELETE', 'rental', id));
 };
 
 // ----------------------- STATIC -----------------------

@@ -7,6 +7,10 @@ import EditMyProduct from "../components/forms/myproduct/EditMyProduct";
 const columns = {
   // id: "ID",
   userName: "Name",
+   productName:"Device Name",
+   mpMac:"Device Mac",
+   mpipAddress:"Device IP",
+  deviceStatus:"Device Status",
   status: "Status",
 //   amount: "Registration Date",
 //   status: "Status",
