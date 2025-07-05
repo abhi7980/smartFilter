@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DynamicDataTable from "../components/dataTable/DynamicDataTable";
-import { deleteRental, getRental } from "../networkHandler/services";
+import { deleteRental, editStatus, getRental } from "../networkHandler/services";
 import Cookies from "js-cookie";
 import AddEditUser from "../components/forms/users/AddEditUser";
 import EditUser from "../components/forms/users/EditUsers";
@@ -55,6 +55,18 @@ export default function RentalTable() {
     alert(`You clicked on ${row.name}`);
   };
 
+   async function toggleStatus(row,key){
+  const formValues = {
+     Id : row.id || "",
+    // Name: row.name||"",
+    // About: row.about||"",
+    // Amount: row.amount|| "",
+      Status: !row.status,
+    };
+    const response=await editStatus({...formValues},'RentalPlan')
+    console.log(response)
+    if (response=== "OK") setShouldUpdate(!shouldUpdate)
+    }
   return (
     <DynamicDataTable
       title="Rentals"
@@ -62,6 +74,7 @@ export default function RentalTable() {
       data={data}
       loading={loading}
       onRowClick={handleRowClick}
+      onToggle={toggleStatus}
       // addComponent={(props) => <AddEditUser {...props shouldUpdate={shouldUpdate}} />}
       addComponent={(props) => (
         <AddRental

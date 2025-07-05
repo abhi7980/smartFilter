@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DynamicDataTable from '../components/dataTable/DynamicDataTable';
-import { deleteUser, getUsers } from '../networkHandler/services'; 
+import { deleteUser, editStatus, getUsers } from '../networkHandler/services'; 
 import Cookies from 'js-cookie';
 import AddEditUser from '../components/forms/users/AddEditUser'
 import EditUser from '../components/forms/users/EditUsers';
@@ -25,7 +25,9 @@ const columns = {
   regDate: 'Registration Date',
 };
 
+
 export default function UserDetails() {
+  
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shouldUpdate, setShouldUpdate] = useState(false)
@@ -67,6 +69,29 @@ export default function UserDetails() {
     alert(`You clicked on ${row.name}`);
   };
 
+  async function toggleStatus(row,key){
+const formValues = {
+   Id : row.id || "",
+    // Name: row.name||"",
+    // Email: row.email||"",
+    // Mobile: row.mobile|| "",
+    // UserName: row.userName||"",
+    // Password: row.password||"",
+    // Role: row.role||"",
+    // Address: row.address||"",
+    // Landmark: row.landmark||"",
+    // Street:row.street|| "",
+    // City: row.city||"",
+    // State: row.state|| "",
+    // PinCode: row.pinCode||"",
+    // AddressType: "Home",
+    Status: !row.status,
+  };
+  const response=await editStatus({...formValues},'User')
+  console.log(response)
+  if (response=== "OK") setShouldUpdate(!shouldUpdate)
+  }
+
   return (
     <DynamicDataTable
       title="Users"
@@ -74,6 +99,7 @@ export default function UserDetails() {
       data={data}
       loading={loading}
       onRowClick={handleRowClick}
+      onToggle={toggleStatus}
       // addComponent={(props) => <AddEditUser {...props shouldUpdate={shouldUpdate}} />}
       addComponent={(props) => <AddEditUser {...props} setShouldUpdate={setShouldUpdate} shouldUpdate={shouldUpdate}/>}
 

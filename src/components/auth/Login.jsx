@@ -28,7 +28,7 @@ export default function Login() {
     const userData = await loginUser(username, password, true );
 
     login(userData);
-    navigate('/');
+    navigate('/dashboard');
   };
 
   return (

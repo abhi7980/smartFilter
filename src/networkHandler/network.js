@@ -1,16 +1,10 @@
-// utils/networkHandler.js
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 const getToken = () => localStorage.getItem('token');
 
-const api = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const api = axios.create({ baseURL });
 
 api.interceptors.request.use(
   (config) => {
@@ -22,49 +16,44 @@ api.interceptors.request.use(
 );
 
 /**
- * @param {string} url - endpoint
- * @param {Object} data - query/body data
- * @param {Object} options
- *   asQueryParams: boolean — to send data as query string
- *   files: array of File — to attach as form data
+ * Always sends FormData: fields + optional files
+ *
+ * @param {string} url - API endpoint
+ * @param {Object} fields - key-value pairs (text fields)
+ * @param {File[]} [files] - optional array of files
  */
-export const postRequest = async (url, data = {}, options = {}) => {
-  const { asQueryParams = false, files = null } = options;
-
+export const postRequest = async (url, fields = {}, files = []) => {
   try {
-    if (files && files.length > 0) {
-      // Handle multipart/form-data with query params
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('files', file); // assumes field is called "files"
-      });
+    const formData = new FormData();
 
-      return (await api.post(url, formData, { params: data })).data;
+    // Add all fields (stringify if object)
+    Object.entries(fields).forEach(([key, value]) => {
+      formData.append(
+        key,
+        typeof value === 'object' && !(value instanceof File)
+          ? JSON.stringify(value)
+          : value
+      );
+    });
+
+    // Append files (optional)
+    if (files.length > 0) {
+      files.forEach((file) => formData.append('files', file)); // use key 'files'
     }
 
-    if (asQueryParams) {
-      // Send data in query string, no body
-      return (await api.post(url, null, { params: data })).data;
-    }
-
-    // Default: send data in JSON body
-    return (await api.post(url, data)).data;
+    const response = await api.post(url, formData); // let Axios set headers
+    return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
 
-export const getRequest = async (url, params = {}, options = {}) => {
-  const { asQueryParams = true } = options;
-
+/**
+ * GET Request
+ */
+export const getRequest = async (url, params = {}) => {
   try {
-    const config = {};
-
-    if (asQueryParams) {
-      config.params = params;
-    }
-
-    const response = await api.get(url, config);
+    const response = await api.get(url, { params });
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

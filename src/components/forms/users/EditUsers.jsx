@@ -121,7 +121,7 @@ export default function EditUser({ currentRowData, setShouldUpdate, shouldUpdate
     setMessage("");
 
     try {
-      await editUser(formValues);
+      await editUser({ ...formValues, files });
       setStatus("success");
       setMessage("User updated successfully!");
       setShouldUpdate(!shouldUpdate);

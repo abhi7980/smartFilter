@@ -29,11 +29,11 @@ export default function EditProduct({
     // ProductId: "",
     // RentId: "",
     Name: "",
-    Serial: "",
-    Mac: "",
-    IPAddress: "",
+    // Serial: "",
+    // Mac: "",
+    // IPAddress: "",
     ViewOrder: "",
-    Status: false,
+    // Status: false,
     // RegDate: "",
     About: "", // <-- new field
     Price: "", // <-- new field
@@ -61,11 +61,11 @@ export default function EditProduct({
         // ProductId: currentRowData.productId || "",
         // RentId: currentRowData.rentId || "",
         Name: currentRowData.name || "",
-        Serial: currentRowData.serial || "",
-        Mac: currentRowData.mac || "",
-        IPAddress: currentRowData.ipAddress || "",
+        // Serial: currentRowData.serial || "",
+        // Mac: currentRowData.mac || "",
+        // IPAddress: currentRowData.ipAddress || "",
         ViewOrder: currentRowData.viewOrder || "",
-        Status: currentRowData.status || false,
+        // Status: currentRowData.status || false,
         // RegDate: currentRowData.regDate || "",
         About: currentRowData.about || "",
         Price: currentRowData.price || "",
@@ -97,7 +97,7 @@ export default function EditProduct({
         formData.append("files", file);
       });
 
-      await editProduct(formValues); // Adjust this function to handle formData if needed
+      await editProduct({ ...formValues, files }); // Adjust this function to handle formData if needed
 
       setStatus("success");
       setMessage("Product updated successfully!");
@@ -136,19 +136,6 @@ export default function EditProduct({
               </Grid>
             ) : null
           )}
-
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formValues.Status}
-                  onChange={handleChange}
-                  name="Status"
-                />
-              }
-              label="Active"
-            />
-          </Grid>
 
           <Grid item xs={12}>
             <Paper

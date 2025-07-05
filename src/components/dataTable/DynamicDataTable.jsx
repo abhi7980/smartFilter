@@ -9,7 +9,6 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  TextField,
   IconButton,
   Typography,
   Skeleton,
@@ -18,11 +17,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Stack,
+  Switch,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import waterfilter from "../../assets/images/filter.jpg";
 
 export default function DynamicDataTable({
   columns,
@@ -34,7 +34,8 @@ export default function DynamicDataTable({
   onDelete,
   addComponent,
   editComponent,
-  handleDelete
+  handleDelete,
+  onToggle
 }) {
   const [rows, setRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
@@ -43,29 +44,21 @@ export default function DynamicDataTable({
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
-  const [newRow, setNewRow] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
 
-  // Set initial rows from props
+  const baseURL = import.meta.env.VITE_BASE_URL || "";
+
   useEffect(() => {
     setRows(data || []);
   }, [data]);
 
   const columnKeys = Object.keys(columns || {});
+  const imageColumnKeys = ["image", "photo", "avatar", "profilePic"];
+  const fallbackImage = waterfilter;
 
   const handleEdit = (rowIndex) => {
     setCurrentRow({ ...rows[rowIndex], _originalIndex: rowIndex });
     setEditModalOpen(true);
-
-  };
-
-  const handleSaveEdit = () => {
-    if (currentRow) {
-      const newRows = [...rows];
-      newRows[currentRow._originalIndex] = currentRow;
-      setRows(newRows);
-      if (onSave) onSave(currentRow);
-      setEditModalOpen(false);
-    }
   };
 
   const handleAddNew = () => {
@@ -73,27 +66,8 @@ export default function DynamicDataTable({
       acc[key] = "";
       return acc;
     }, {});
-    setNewRow(emptyRow);
     setAddModalOpen(true);
   };
-
-  const handleSaveNew = () => {
-    if (newRow) {
-      const updatedRows = [...rows, newRow];
-      setRows(updatedRows);
-      if (onSave) onSave(newRow);
-      setAddModalOpen(false);
-      setNewRow({});
-    }
-  };
-
-  // const handleDelete = (rowIndex) => {
-  //   const rowToDelete = rows[rowIndex];
-  //   const newRows = [...rows];
-  //   newRows.splice(rowIndex, 1);
-  //   setRows(newRows);
-  //   if (onDelete) onDelete(rowToDelete);
-  // };
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -101,6 +75,21 @@ export default function DynamicDataTable({
       direction = "desc";
     }
     setSortConfig({ key, direction });
+  };
+
+  const handleStatusToggle = (row, key) => {
+    const updatedRow = {
+      ...row,
+      [key]: !row[key],
+    };
+
+    // Optional: Call external save function
+    onSave?.(updatedRow);
+
+    const updatedRows = rows.map((r) =>
+      r.id === row.id ? updatedRow : r
+    );
+    setRows(updatedRows);
   };
 
   const sortedRows = React.useMemo(() => {
@@ -132,7 +121,7 @@ export default function DynamicDataTable({
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell> {/* Serial Number Header */}
+              <TableCell>#</TableCell>
               {columnKeys.map((key) => (
                 <TableCell
                   key={key}
@@ -150,66 +139,106 @@ export default function DynamicDataTable({
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {loading
               ? Array.from({ length: rowsPerPage }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell>{page * rowsPerPage + i + 1}</TableCell> {/* Skeleton Serial */}
-                  {columnKeys.map((_, j) => (
-                    <TableCell key={j}>
-                      <Skeleton variant="text" width="80%" />
-                    </TableCell>
-                  ))}
-                  <TableCell>
-                    <Skeleton
-                      variant="circular"
-                      width={24}
-                      height={24}
-                      sx={{ mr: 1 }}
-                    />
-                    <Skeleton variant="circular" width={24} height={24} />
-                  </TableCell>
-                </TableRow>
-              ))
-              : sortedRows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, rowIndex) => (
-                  <TableRow
-                    key={rowIndex}
-                    hover
-                    onClick={() => onRowClick?.(row)}
-                    sx={{ cursor: onRowClick ? "pointer" : "default" }}
-                  >
-                    <TableCell>{page * rowsPerPage + rowIndex + 1}</TableCell> {/* Serial Number */}
-                    {columnKeys.map((key) => (
-                      <TableCell key={key}>
-                        <Typography variant="body2">
-                          {row[key] != null ? row[key].toString() : ""}
-                        </Typography>
+                  <TableRow key={i}>
+                    <TableCell>{page * rowsPerPage + i + 1}</TableCell>
+                    {columnKeys.map((_, j) => (
+                      <TableCell key={j}>
+                        <Skeleton variant="text" width="80%" />
                       </TableCell>
                     ))}
                     <TableCell>
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(rowIndex + page * rowsPerPage);
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(data[rowIndex].id);
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+                      <Skeleton
+                        variant="circular"
+                        width={24}
+                        height={24}
+                        sx={{ mr: 1 }}
+                      />
+                      <Skeleton variant="circular" width={24} height={24} />
                     </TableCell>
                   </TableRow>
-                ))}
-          </TableBody>
+                ))
+              : sortedRows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, rowIndex) => (
+                    <TableRow
+                      key={rowIndex}
+                      hover
+                      onClick={() => onRowClick?.(row)}
+                      sx={{ cursor: onRowClick ? "pointer" : "default" }}
+                    >
+                      <TableCell>{page * rowsPerPage + rowIndex + 1}</TableCell>
+                      {columnKeys.map((key) => (
+                        <TableCell key={key}>
+                          {imageColumnKeys.includes(key.toLowerCase()) ? (
+                            (() => {
+                              const rawImage = row[key];
+                              const imageUrl = Array.isArray(rawImage)
+                                ? `${baseURL}${rawImage[0]}`
+                                : typeof rawImage === "string"
+                                ? `${baseURL}${rawImage}`
+                                : null;
 
+                              return (
+                                <img
+                                  src={imageUrl || fallbackImage}
+                                  alt="preview"
+                                  style={{
+                                    width: 50,
+                                    height: 50,
+                                    objectFit: "cover",
+                                    borderRadius: 4,
+                                    cursor: imageUrl ? "pointer" : "default",
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (imageUrl) setPreviewImage(imageUrl);
+                                  }}
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = fallbackImage;
+                                  }}
+                                />
+                              );
+                            })()
+                          ) : key.toLowerCase() === "status" ? (
+                            <Switch
+                              checked={Boolean(row[key])}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={() => onToggle(row, key)}
+                              color="primary"
+                            />
+                          ) : (
+                            <Typography variant="body2">
+                              {row[key] != null ? row[key].toString() : ""}
+                            </Typography>
+                          )}
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(rowIndex + page * rowsPerPage);
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(row.id);
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+          </TableBody>
         </Table>
       </TableContainer>
 
@@ -227,30 +256,47 @@ export default function DynamicDataTable({
       />
 
       {/* Edit Modal */}
-      <Dialog open={editModalOpen} scroll="body" onClose={() => setEditModalOpen(false)}>
+      <Dialog
+        open={editModalOpen}
+        scroll="body"
+        onClose={() => setEditModalOpen(false)}
+      >
         <DialogTitle>Edit Row</DialogTitle>
         <DialogContent>
           {editComponent({ currentRowData: currentRow })}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditModalOpen(false)}>Close</Button>
-          {/* <Button onClick={handleSaveEdit} variant="contained">
-            Save
-          </Button> */}
         </DialogActions>
       </Dialog>
 
       {/* Add New Modal */}
-      <Dialog open={addModalOpen} scroll="body" onClose={() => setAddModalOpen(false)}>
-        <DialogTitle>Add New Row</DialogTitle>
-        <DialogContent>
-          {addComponent()}
-        </DialogContent>
+      <Dialog
+        open={addModalOpen}
+        scroll="body"
+        onClose={() => setAddModalOpen(false)}
+      >
+        <DialogContent>{addComponent()}</DialogContent>
         <DialogActions>
           <Button onClick={() => setAddModalOpen(false)}>Close</Button>
-          {/* <Button onClick={handleSaveNew} variant="contained">
-            Add
-          </Button> */}
+        </DialogActions>
+      </Dialog>
+
+      {/* Image Preview Modal */}
+      <Dialog
+        open={Boolean(previewImage)}
+        onClose={() => setPreviewImage(null)}
+      >
+        <DialogTitle>Image Preview</DialogTitle>
+        <DialogContent>
+          <img
+            src={previewImage}
+            alt="Preview"
+            style={{ width: "100%", height: "auto", borderRadius: 8 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPreviewImage(null)}>Close</Button>
         </DialogActions>
       </Dialog>
     </Paper>

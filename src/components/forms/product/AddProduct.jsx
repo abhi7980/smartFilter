@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   TextField,
   Checkbox,
@@ -14,32 +14,26 @@ import {
   ListItemText,
   Alert,
   CircularProgress,
+  MenuItem,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import { addProduct } from "../../../networkHandler/services"; // adjust if needed
+import { addProduct, getRental } from "../../../networkHandler/services"; // adjust if needed
 
 export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
   const [formValues, setFormValues] = useState({
-//   Id: "",
-//   UserId: "",
-//   ProductId: "",
-//   RentId: "",
-  Name: "",
-  Serial: "",
-  Mac: "",
-  IPAddress: "",
-  ViewOrder: "",
-  Status: false,
-  // RegDate: "",
-  About: "",            // <-- new field
-  Price: "",            // <-- new field
-  DepositAmount: "",    // <-- new field
-});
-
+    Name: "",
+    RentalPlan: "",
+    ViewOrder: "",
+    Status: true,
+    About: "",
+    Price: "",
+    DepositAmount: "",
+  });
 
   const [files, setFiles] = useState([]);
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
+  const [rentalPlans, setRentalPlans] = useState([]);
 
   const onDrop = useCallback((acceptedFiles) => {
     setFiles((prev) => [...prev, ...acceptedFiles]);
@@ -58,6 +52,18 @@ export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
     }));
   };
 
+  useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const planRes = await getRental();
+        setRentalPlans(planRes.data || []);
+      } catch (err) {
+        console.error("Error loading dropdowns:", err);
+      }
+    };
+    fetchDropdowns();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("submitting");
@@ -68,27 +74,21 @@ export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
       for (const key in formValues) {
         formData.append(key, formValues[key]);
       }
-
       files.forEach((file) => {
         formData.append("files", file);
       });
 
-      await addProduct(formValues); // Make sure `addUser` handles multipart/form-data
+      await addProduct({ ...formValues, files });
 
       setStatus("success");
       setMessage("Product added successfully!");
       setFormValues({
-        // Id: "",
-        // UserId: "",
-        // ProductId: "",
-        // RentId: "",
         Name: "",
-        Serial: "",
-        Mac: "",
-        IPAddress: "",
+        RentalPlan: "",
         ViewOrder: "",
-        Status: false,
-        // RegDate: "",
+        About: "",
+        Price: "",
+        DepositAmount: "",
       });
       setFiles([]);
       setShouldUpdate(!shouldUpdate);
@@ -107,34 +107,40 @@ export default function AddProduct({ setShouldUpdate, shouldUpdate }) {
 
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          {Object.entries(formValues).map(([field, value]) => (
-            field !== "Status" ? (
+          {Object.entries(formValues).map(([field, value]) => {
+            if (field === "RentalPlan" || field === "Status") return null;
+            return (
               <Grid item xs={12} sm={6} key={field}>
                 <TextField
                   fullWidth
                   type={field.toLowerCase().includes("date") ? "datetime-local" : "text"}
-                  label={field.toLowerCase().includes("date") ? "" : field}
+                  label={field}
                   name={field}
                   value={value}
                   onChange={handleChange}
                 />
               </Grid>
-            ) : null
-          ))}
+            );
+          })}
 
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formValues.Status}
-                  onChange={handleChange}
-                  name="Status"
-                />
-              }
-              label="Active"
-            />
+          <Grid item xs={12} sm={6}>
+            <TextField
+            sx={{width:'14.5rem'}}
+              select
+              fullWidth
+              label="Rental Plan"
+              name="RentalPlan"
+              value={formValues.RentalPlan}
+              onChange={handleChange}
+            >
+              <MenuItem value="">Select Rental Plan</MenuItem>
+              {rentalPlans.map((plan) => (
+                <MenuItem key={plan.id} value={plan.id}>
+                  {plan.name}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
-
           <Grid item xs={12}>
             <Paper
               variant="outlined"

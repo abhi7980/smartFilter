@@ -35,7 +35,7 @@ export default function AppRoutes() {
         <Route path="/products" element={<Product />} />
          <Route path="/users" element={<UserDetails />} />
           <Route path="/rental" element={<RentalTable />} />
-          <Route path="/customer-devices" element={<CustomerDevices />}/>
+          <Route path="/my-products" element={<CustomerDevices />}/>
       </Route>
     </Routes>
   );

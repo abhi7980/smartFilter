@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DynamicDataTable from '../components/dataTable/DynamicDataTable';
-import { deleteProduct, deleteUser, getProducts, getUsers } from '../networkHandler/services'; // Replace with getProducts & deleteProduct if available
+import { deleteProduct, deleteUser, editStatus, getProducts, getUsers } from '../networkHandler/services'; // Replace with getProducts & deleteProduct if available
 import Cookies from 'js-cookie';
 import AddProduct from '../components/forms/product/AddProduct';
 import EditProduct from '../components/forms/product/EditProduct';
@@ -9,6 +9,7 @@ const columns = {
   // id: 'ID',
   name: 'Name',
   about: 'Description',
+  photo: "Image",
   price: 'Price',
   depositAmount: 'Deposit Amount',
   rentId: 'Rent ID',
@@ -57,6 +58,22 @@ export default function ProductTable() {
     alert(`You clicked on ${row.name}`);
   };
 
+  async function toggleStatus(row, key) {
+    const formValues = {
+      // Name: "",
+      // RentalPlan: "",
+      // ViewOrder: "",
+      // About: "",
+      // Price: "",
+      // DepositAmount: "",
+      Id: row.id,
+      Status: !row.status,
+    };
+    const response = await editStatus({ ...formValues }, 'Product')
+    console.log(response)
+    if (response === "OK") setShouldUpdate(!shouldUpdate)
+  }
+
   return (
     <DynamicDataTable
       title="Products"
@@ -64,6 +81,7 @@ export default function ProductTable() {
       data={data}
       loading={loading}
       onRowClick={handleRowClick}
+      onToggle={toggleStatus}
       addComponent={(props) => (
         <AddProduct {...props} setShouldUpdate={setShouldUpdate} shouldUpdate={shouldUpdate} />
       )}

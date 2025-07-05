@@ -89,7 +89,7 @@ export default function AddEditUser({ setShouldUpdate, shouldUpdate }) {
         Status: formValues.Status,
       };
 
-      const response = await addUser(userData);
+      const response = await addUser({ ...userData, files });
 
       setStatus("success");
       setMessage("User added successfully!");
@@ -158,8 +158,8 @@ export default function AddEditUser({ setShouldUpdate, shouldUpdate }) {
             "Address",
             "Landmark",
             "Street",
-            "City",
             "State",
+            "City",
             "PinCode",
             "AddressType",
           ].map((field) => (

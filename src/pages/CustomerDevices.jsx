@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import DynamicDataTable from "../components/dataTable/DynamicDataTable";
-import { deleteRental, getMyproductsAdmin, getRental } from "../networkHandler/services";
+import { deleteMyProduct, deleteRental, editStatus, getMyproductsAdmin, getRental } from "../networkHandler/services";
 import Cookies from "js-cookie";
-import AddRental from "../components/forms/rental/AddRental";
-import EditRental from "../components/forms/rental/EditRental";
+import AddMyProduct from "../components/forms/myproduct/AddMyProduct";
+import EditMyProduct from "../components/forms/myproduct/EditMyProduct";
 const columns = {
   // id: "ID",
-  name: "Name",
+  userName: "Name",
   status: "Status",
 //   amount: "Registration Date",
 //   status: "Status",
@@ -41,7 +41,7 @@ export default function CustomerDevices() {
 
   const handleDelete = async (id) => {
     console.log(id);
-    await deleteRental({ id: id });
+    await deleteMyProduct({ id: id });
     setShouldUpdate(!shouldUpdate);
   };
 
@@ -53,23 +53,36 @@ export default function CustomerDevices() {
     alert(`You clicked on ${row.name}`);
   };
 
+   async function toggleStatus(row,key){
+    const formValues = {
+        Id : row.id || "",
+      // Name: row.name||"",
+      // About: row.about||"",
+      // Amount: row.amount|| "",
+        Status: !row.status,
+      };
+      const response=await editStatus({...formValues},'MyProduct')
+      console.log(response)
+      if (response=== "OK") setShouldUpdate(!shouldUpdate)
+      }
   return (
     <DynamicDataTable
-      title="Rentals"
+      title="My Products"
       columns={columns}
       data={data}
       loading={loading}
       onRowClick={handleRowClick}
+      onToggle={toggleStatus}
       // addComponent={(props) => <AddEditUser {...props shouldUpdate={shouldUpdate}} />}
       addComponent={(props) => (
-        <AddRental
+        <AddMyProduct
           {...props}
           setShouldUpdate={setShouldUpdate}
           shouldUpdate={shouldUpdate}
         />
       )}
       editComponent={(props) => (
-        <EditRental
+        <EditMyProduct
           {...props}
           setShouldUpdate={setShouldUpdate}
           shouldUpdate={shouldUpdate}

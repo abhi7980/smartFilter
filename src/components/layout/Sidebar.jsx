@@ -42,9 +42,9 @@ const menuItems = [
     path: "/users",
   },
   {
-  text: "Customer Devices",
+  text: "My Products",
   icon: <DevicesOtherOutlinedIcon fontSize="small" />,
-  path: "/customer-devices",
+  path: "/my-products",
 }
 
   // {
